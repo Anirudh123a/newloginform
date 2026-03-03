@@ -11,9 +11,6 @@ export default function Dashboard() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ===============================
-  // 🔹 Upload PPT to Drive
-  // ===============================
   const handleSubmit = async () => {
     if (!repo || !ppt) {
       alert("Repo link and PPT required");
@@ -36,34 +33,39 @@ export default function Dashboard() {
       };
 
       try {
-        await fetch(
-          "https://script.google.com/macros/s/AKfycbzO0Hz6Nfa3DY6_OEE0EF1s0QwY0KJOcsIfmnKtxbQ6PHiahIALBDCMUaRW8CALzOMcjA/exec",
-          {
-            method: "POST",
-            body: JSON.stringify(data)
-          }
-        );
+        const response = await fetch("http://localhost:5000/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
 
-        alert("PPT Uploaded Successfully!");
-        setRepo("");
-        setDeploy("");
-        setPpt(null);
+        const text = await response.text();
+        const result = JSON.parse(text);
+
+        if (result.result === "success") {
+          alert("PPT Uploaded Successfully!");
+          setRepo("");
+          setDeploy("");
+          setPpt(null);
+        } else {
+          alert("Upload Failed: " + result.message);
+        }
+
       } catch (error) {
-        console.error(error);
-        alert("Upload Failed!");
+        console.error("Frontend Error:", error);
+        alert("Upload Failed! Backend not running?");
       }
     };
   };
 
-  // ===============================
-  // 🔹 Fetch Staff Feedback (Apps Script)
-  // ===============================
   const fetchStaffFeedback = async () => {
     setLoading(true);
 
     try {
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxNvFIVRS51JeLVkF89q3GrsvorOmSlM4JoQ1yUyU-r9op04t18r5k1Hp--qkmhI66C/exec"
+        "https://script.google.com/macros/s/AKfycbzO0Hz6Nfa3DY6_OEE0EF1s0QwY0KJOcsIfmnKtxbQ6PHiahIALBDCMUaRW8CALzOMcjA/exec"
       );
 
       const data = await response.json();
@@ -89,19 +91,6 @@ export default function Dashboard() {
     <div className="container">
       <h2>Welcome {team}</h2>
 
-      {/* 🎓 Student Feedback Form */}
-      <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSfEkTGtQjAhZ_f3E5_bQQEvGWhguJ3jmWNYGRl3SRpdWVSzWw/viewform"
-        target="_blank"
-        rel="noreferrer"
-        className="link-btn"
-      >
-        Fill Student Feedback
-      </a>
-
-      <br /><br />
-
-      {/* 📂 Project Submission */}
       <input
         type="text"
         placeholder="Git Repo Link"
@@ -126,7 +115,6 @@ export default function Dashboard() {
 
       <br /><br />
 
-      {/* 🔵 Get Feedback */}
       <button
         onClick={fetchStaffFeedback}
         style={{ background: "blue", color: "white" }}
@@ -144,7 +132,7 @@ export default function Dashboard() {
             <p>No feedback available yet.</p>
           ) : (
             staffFeedback.map((item, index) => (
-              <div key={index} className="feedback-box">
+              <div key={index}>
                 <p><strong>Marks:</strong> {item.Marks}</p>
                 <p><strong>Comments:</strong> {item.Comments}</p>
               </div>
