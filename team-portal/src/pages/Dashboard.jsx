@@ -91,6 +91,19 @@ export default function Dashboard() {
     <div className="container">
       <h2>Welcome {team}</h2>
 
+      {/* 🔵 Student Feedback Redirect Button */}
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSfEkTGtQjAhZ_f3E5_bQQEvGWhguJ3jmWNYGRl3SRpdWVSzWw/viewform"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <button style={{ background: "green", color: "white" }}>
+          Fill Student Feedback
+        </button>
+      </a>
+
+      <br /><br />
+
       <input
         type="text"
         placeholder="Git Repo Link"
@@ -119,7 +132,7 @@ export default function Dashboard() {
         onClick={fetchStaffFeedback}
         style={{ background: "blue", color: "white" }}
       >
-        Get Feedback
+        Get Staff Feedback
       </button>
 
       {loading && <p>Loading feedback...</p>}
